@@ -1,57 +1,59 @@
-# Exercise 4.5 - AlexNet dengan jumlah unit dense layer berbeda
+
+# Exercise 4.5 - AlexNet dengan jumlah unit Dense berbeda
 # Dense 4096 -> 2048, 4096 -> 2048, 1000 -> 500
-# Bandingkan Total params dengan Example 4.5 (28,054,497)
+
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
-from keras.layers.normalization import BatchNormalization
 
-#Create the AlexNet model
 model = Sequential()
 
 # 1st Convolutional Layer
-model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(11,11), activation='relu', strides=(4,4), padding='valid'))
+model.add(Conv2D(filters=96, input_shape=(224,224,3),
+                 kernel_size=(11,11), activation='relu',
+                 strides=(4,4), padding='valid'))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2),
-padding='valid'))
+                       padding='valid'))
 
 # 2nd Convolutional Layer
-model.add(Conv2D(filters=256, kernel_size=(11,11), activation='relu',
-strides=(1,1), padding='valid'))
+model.add(Conv2D(filters=256, kernel_size=(11,11),
+                 activation='relu', strides=(1,1), padding='valid'))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2),
-padding='valid'))
+                       padding='valid'))
 
 # 3rd Convolutional Layer
-model.add(Conv2D(filters=384, kernel_size=(3,3), activation='relu',
-strides=(1,1), padding='valid'))
+model.add(Conv2D(filters=384, kernel_size=(3,3),
+                 activation='relu', strides=(1,1), padding='valid'))
 
 # 4th Convolutional Layer
-model.add(Conv2D(filters=384, kernel_size=(3,3), activation='relu',
-strides=(1,1), padding='valid'))
+model.add(Conv2D(filters=384, kernel_size=(3,3),
+                 activation='relu', strides=(1,1), padding='valid'))
 
 # 5th Convolutional Layer
-model.add(Conv2D(filters=256, kernel_size=(3,3), activation='relu',
-strides=(1,1), padding='valid'))
+model.add(Conv2D(filters=256, kernel_size=(3,3),
+                 activation='relu', strides=(1,1), padding='valid'))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2),
-padding='valid'))
+                       padding='valid'))
 
-# 1st Fully Connected layer
+# Fully Connected Layers
 model.add(Flatten())
-model.add(Dense(2048, activation='relu', input_shape=(224*224*3,)))
+model.add(Dense(2048, activation='relu'))
 model.add(Dropout(0.4))
 
-# 2nd Fully Connected Layer
-model.add(Dense(2048,activation='relu'))
+model.add(Dense(2048, activation='relu'))
 model.add(Dropout(0.4))
 
-# 3rd Fully Connected Layer
-model.add(Dense(500,activation='relu'))
+model.add(Dense(500, activation='relu'))
 model.add(Dropout(0.4))
 
 # Output Layer
-model.add(Dense(17,activation='softmax'))
+model.add(Dense(17, activation='softmax'))
 
 model.summary()
 
 # Compile the model
-model.compile(loss=keras.losses.categorical_crossentropy,
-optimizer='adam', metrics=["accuracy"])
+model.compile(
+    loss=keras.losses.categorical_crossentropy,
+    optimizer='adam',
+    metrics=['accuracy']
+)

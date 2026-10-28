@@ -1,58 +1,75 @@
+
 # Exercise 4.8 - Tambah Conv2D, MaxPooling, Dropout sebelum Flatten
 
-# Simple CNN for the MNIST Dataset
 import time
-import matplotlib.pyplot as plt   # (di buku Example 4.9 import ini tidak ada)
+import matplotlib.pyplot as plt
+
 from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers.convolutional import Conv2D, MaxPooling2D
-from keras.utils import np_utils
-# load data
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
+from keras.utils import to_categorical
+
+# Load data
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
-# plot 4 images as gray scale
-plt.subplot(141)
-plt.imshow(X_train[0])
-plt.subplot(142)
-plt.imshow(X_train[1])
-plt.subplot(143)
-plt.imshow(X_train[2])
-plt.subplot(144)
-plt.imshow(X_train[3])
+
+# Plot 4 images as grayscale
+plt.figure(figsize=(8, 3))
+for i in range(4):
+    plt.subplot(1, 4, i + 1)
+    plt.imshow(X_train[i], cmap='gray')
+    plt.axis('off')
 plt.show()
 
-# reshape to be [samples][width][height][channels]
-X_train = X_train.reshape((X_train.shape[0], 28, 28, 1)).astype('float32')
-X_test = X_test.reshape((X_test.shape[0], 28, 28, 1)).astype('float32')
+# Reshape data
+X_train = X_train.reshape(-1, 28, 28, 1).astype('float32')
+X_test = X_test.reshape(-1, 28, 28, 1).astype('float32')
 
-# normalize inputs from 0-255 to 0-1
-X_train = X_train / 255
-X_test = X_test / 255
-# one hot encode outputs
-y_train = np_utils.to_categorical(y_train)
-y_test = np_utils.to_categorical(y_test)
+# Normalize inputs from 0-255 to 0-1
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+# One-hot encode outputs
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
 num_classes = y_test.shape[1]
+
 # Create model
 model = Sequential()
+
 model.add(Conv2D(32, (5, 5), input_shape=(28, 28, 1),
-activation='relu'))
+                 activation='relu'))
 model.add(MaxPooling2D())
 model.add(Dropout(0.2))
-model.add(Conv2D(64, (3, 3), activation='relu'))   # layer tambahan
-model.add(MaxPooling2D())                          # layer tambahan
-model.add(Dropout(0.2))                            # layer tambahan
+
+# Additional layers
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D())
+model.add(Dropout(0.2))
+
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
 model.add(Dense(num_classes, activation='softmax'))
+
 # Compile model
-model.compile(loss='categorical_crossentropy', optimizer='adam',
-metrics=['accuracy'])
+model.compile(
+    loss='categorical_crossentropy',
+    optimizer='adam',
+    metrics=['accuracy']
+)
+
+model.summary()
 
 # Fit the model
 start = time.time()
-model.fit(X_train, y_train, validation_data=(X_test, y_test),
-epochs=10, batch_size=200)
-print('Training time (s): ', time.time() - start)
-# Evaluation of the model
+model.fit(
+    X_train, y_train,
+    validation_data=(X_test, y_test),
+    epochs=10,
+    batch_size=200
+)
+
+print('Training time (s):', time.time() - start)
+
+# Evaluate model
 scores = model.evaluate(X_test, y_test, verbose=0)
-print("CNN Error: %.2f%%" % (100-scores[1]*100))
+print("CNN Error: %.2f%%" % (100 - scores[1] * 100))

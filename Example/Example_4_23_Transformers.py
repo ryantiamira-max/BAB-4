@@ -1,10 +1,14 @@
-# Example 4.23
-# https://github.com/huggingface/transformers
-# pip install transformers
-# https://aka.ms/vs/16/release/vc_redist.x64.exe
 
-
+# Example 4.23 - Sentiment Analysis
 
 from transformers import pipeline
-classifier = pipeline('sentiment-analysis')
-classifier('This is a good movie.')
+
+# Membuat model untuk analisis sentimen
+classifier = pipeline("sentiment-analysis")
+
+# Menganalisis sentimen kalimat
+result = classifier("This is a good movie.")
+
+# Menampilkan hasil
+print(result)
+
